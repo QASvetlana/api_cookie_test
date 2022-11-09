@@ -32,13 +32,14 @@ public class cookieTest {
         int userIdOnAuth = responseGetAuth.jsonPath().getInt("user_id");
 
         assertEquals(200, responseGetAuth.statusCode(), "Unexpected status code");
-        assertTrue(cookies.containsKey("auth_sid"), "Response doesn't have 'auth_sid' cookies");
+        assertTrue(cookies.containsKey("auth_sid"), "Response doesn't have 'auth_sid' cookie");
         assertTrue(headers.hasHeaderWithName("x-csrf-token"), "Response doesn't have 'x-csrf-token' header");
         assertTrue(responseGetAuth.jsonPath().getInt("user_id") > 0, "User id should be greater then 0");
 
         JsonPath responseCheckAuth = RestAssured
                 .given()
-                .header("x-csrf-token", responseGetAuth.getCookie("auth_sid"))
+                .header("x-csrf-token", responseGetAuth.getHeader("x-csrf-token"))
+                .cookie("auth_sid", responseGetAuth.getCookie("auth_sid"))
                 .get("https://playground.learnqa.ru/api/user/auth")
               // .get("https://playground.learnqa.ru/api/homework_cookie")
                 .jsonPath();
